@@ -66,8 +66,10 @@ switch(command){
           if(verbose) console.log('Error:',err);
           return console.log("Oops, an error has ocurred.");
         }
-        console.log('You have successfully deleted the link!');
-      })
+        return console.log('You have successfully deleted the link!');
+      });
+
+      console.log('You have successfully deleted the link!');
     } else {
       console.log("Specified Name doesn't exist")
     }
