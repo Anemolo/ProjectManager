@@ -1,0 +1,17 @@
+{
+  "name": "project-manager",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin":{
+    "pm":"./index.js"
+  },
+  "author": "Daniel Velasquez",
+  "license": "MIT",
+  "dependencies": {
+    "yargs": "^8.0.2"
+  }
+}
