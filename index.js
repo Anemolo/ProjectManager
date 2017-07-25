@@ -4,7 +4,9 @@ const yargs = require('yargs');
 const fs = require('fs');
 const _ = require('lodash');
 const shell = require('shelljs');
-const obj = fs.existsSync('./data.json') ? JSON.parse(fs.readFileSync('./data.json','utf8')) : {};
+
+const configLocation = 'C:/Users/Anemo/AppData/Roaming/packageManager.json';
+const obj = fs.existsSync(configLocation) ? JSON.parse(fs.readFileSync(configLocation,'utf8')) : {};
 
 yargs.help('help')
   .alias('h','help')
@@ -39,12 +41,14 @@ switch(command){
   // Check if name available for use
     if(isAvailable(name)){
       if(verbose) console.log('Creating New Object...');
+        if(verbose) console.log('Old Object: ',Object.keys(obj));
       const newObj = Object.assign({},obj,{
         [name]:__dirname
       });
+        if(verbose) console.log('New Object: ',Object.keys(newObj));
 
     if(verbose) console.log('Writing to File...');
-    fs.writeFileSync('./data.json',JSON.stringify(newObj),'utf8',(err)=>{
+    fs.writeFileSync(configLocation,JSON.stringify(newObj),'utf8',(err)=>{
       if(err){
         if(verbose) console.log('Error has ocurred.');
         return console.log(err);
@@ -63,7 +67,7 @@ switch(command){
       const newObj = _.omit(obj,name);
 
         if(verbose) console.log('Writing To File...');
-      fs.writeFileSync('./data.json',JSON.stringify(newObj),'utf8',(err)=>{
+      fs.writeFileSync(configLocation,JSON.stringify(newObj),'utf8',(err)=>{
         if(err){
           if(verbose) console.log('Error:',err);
           return console.log("Oops, an error has ocurred.");
