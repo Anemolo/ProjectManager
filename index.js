@@ -112,7 +112,7 @@ switch(command){
   case 'work':{
     // Check if name already exists
     if(!isAvailable(name)){
-      console.log(`Opening ${name.toUppercase()}`);
+      console.log(`Opening ${name}`);
       console.log(`Description: ${obj[name].desc}\n`);
       if(verbose) console.log('Opening Shell...');
       shell.exec(`cmder /start "${obj[name].path}"`);
