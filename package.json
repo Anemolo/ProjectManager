@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "spm": "./index.js"
+    "spm": "node ./index.js"
   },
   "author": "Daniel Velasquez",
   "license": "MIT",
