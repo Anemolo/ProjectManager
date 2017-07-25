@@ -4,6 +4,7 @@ const yargs = require('yargs');
 const fs = require('fs');
 const _ = require('lodash');
 const shell = require('shelljs');
+const path = require('path');
 
 const configLocation = 'C:/Users/Anemo/AppData/Roaming/packageManager.json';
 const obj = fs.existsSync(configLocation) ? JSON.parse(fs.readFileSync(configLocation,'utf8')) : {};
@@ -20,44 +21,64 @@ yargs.help('help')
     alias:'v',
     default: false
   })
-  .command('link <name> [desc]','Link a project to Project Manager')
-  .command('drop <name> [desc]','Drop a linked Project')
+  .command('link <name> [desc]','Link a project to Project Manager').option('desc',{alias:'i',default:'No Description.'})
+  .command('drop <name>','Drop a linked Project')
   .command('list','Show linked projects')
   .command('work <name>','Work on current Project')
 
 const argv = yargs.argv;
 const command = argv._[0];
-// Check if the name is free to use
+
 const isAvailable = (name) =>{
   return !Object.keys(obj).reduce((isTaken,key)=>{
     return isTaken || key == name;
   },false)
 }
 
-const { name, dir, verbose } = argv;
+console.log(argv);
+const { name, dir, verbose, desc } = argv;
 
 switch(command){
   case 'link':
   // Check if name available for use
     if(isAvailable(name)){
-      if(verbose) console.log('Creating New Object...');
-        if(verbose) console.log('Old Object: ',Object.keys(obj));
-      const newObj = Object.assign({},obj,{
-        [name]:__dirname
-      });
-        if(verbose) console.log('New Object: ',Object.keys(newObj));
+        // Create new object
+      if(verbose) console.log('Normalizing Path...');
+      const normalizedDir = path.normalize(dir);
 
-    if(verbose) console.log('Writing to File...');
-    fs.writeFileSync(configLocation,JSON.stringify(newObj),'utf8',(err)=>{
-      if(err){
-        if(verbose) console.log('Error has ocurred.');
-        return console.log(err);
+      if(verbose) console.log('Checking path Existance...');
+      if(!fs.existsSync(normalizedDir)){
+        exitError('Directory "' + dir + '" does not exist!',true);
+        break;
       }
-      if(verbose) console.log('Everyone Happy');
-      console.log('Success!');
-    })
+
+      if(verbose) console.log('Checking if path is a directory...');
+      if(!fs.statSync(normalizedDir).isDirectory()){
+        exitError('Path ' + dir + '" does not points to a directory!',true);
+        break;
+      }
+
+      if(verbose) console.log('Old Object Keys: ',Object.keys(obj));
+      if(verbose) console.log('Creating New Object...');
+
+      const newObj = Object.assign({},obj,{
+        [name]: { path:fs.realpathSync(normalizedDir), desc}
+      });
+
+      if(verbose) console.log('New Object Keys: ',Object.keys(newObj));
+
+      if(verbose) console.log('Writing to File...');
+      fs.writeFileSync(configLocation,JSON.stringify(newObj),'utf8',(err)=>{
+        if(err){
+          if(verbose) console.log('Error has ocurred.');
+          return console.log(err);
+        }
+        if(verbose) console.log('Everyone Happy');
+        console.log('Success!');
+      })
+      console.log(`New link to project ${name} has been successfully initialized!`);
     }else{
-      console.log('Name is already Taken');
+      exitError('Name ' + name + '" is already taken!',true);
     }
     break;
   case 'drop':
@@ -82,7 +103,11 @@ switch(command){
     break;
   case 'list':
     console.log('Current Projects:\n');
-    console.log("   " +Object.keys(obj).join('\n   '));
+    const names = Object.keys(obj);
+    if(names.length == 0) console.log('  Not a single project');
+    names.forEach((cur,i)=>{
+      console.log(`  ${i}. - ${cur}: ${obj[cur].desc}\n`);
+    });
 
     break;
   case 'work':{
@@ -103,5 +128,16 @@ switch(command){
     else {
       console.log('That Project Does not exist');
     }
+  }
+}
+
+
+function exitError(err,exit = true){
+  if(exit){
+    console.error(err);
+    process.exit(1);
+  }
+  else {
+    throw new Error(err);
   }
 }
