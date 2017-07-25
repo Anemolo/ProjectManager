@@ -118,7 +118,7 @@ switch(command){
       shell.exec(`cmder /start "${obj[name].path}"`);
 
       if(verbose) console.log('Opening Atom...');
-      shell.cd(obj[name]);
+      shell.cd(obj[name].path);
       shell.exec('atom .');
       shell.exec('explorer .');
 
