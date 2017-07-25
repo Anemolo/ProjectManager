@@ -35,7 +35,6 @@ const isAvailable = (name) =>{
   },false)
 }
 
-console.log(argv);
 const { name, dir, verbose, desc } = argv;
 
 switch(command){
