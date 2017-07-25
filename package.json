@@ -6,12 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "bin":{
-    "pm":"./index.js"
+  "bin": {
+    "pm": "./index.js"
   },
   "author": "Daniel Velasquez",
   "license": "MIT",
   "dependencies": {
+    "lodash": "^4.17.4",
+    "shelljs": "^0.7.8",
     "yargs": "^8.0.2"
   }
 }
